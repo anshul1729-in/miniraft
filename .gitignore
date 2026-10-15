@@ -1,0 +1,5 @@
+# Ignore compiled binary
+miniraft
+
+# Ignore runtime log files
+*.log
