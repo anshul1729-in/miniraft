@@ -4,7 +4,6 @@ A fault-tolerant Distributed Key-Value Store and Lock Manager built from scratch
 
 ## Overview
 
-<!-- CUSTOMIZE: Rewrite this paragraph in your own words to explain why you built this project -->
 Storing state on a single server creates a single point of failure, while replicating state across multiple servers introduces the risk of "split-brain" and data divergence during network partitions or crashes. I built `miniraft` to implement the core Raft Consensus Algorithm from scratch—demonstrating how a cluster of independent nodes elects a single leader, replicates an ordered state machine log across a quorum, and survives abrupt `kill -9` leader failures with zero data loss.
 
 ---
@@ -12,7 +11,6 @@ Storing state on a single server creates a single point of failure, while replic
 ## Distributed Systems Fundamentals Covered
 
 ### 1. Leader Election & Randomized Timeouts (`RequestVote` RPC)
-<!-- CUSTOMIZE: Explain in your own words how Followers become Candidates and why randomized timeouts prevent infinite split votes -->
 Every node runs as a **Follower**, **Candidate**, or **Leader** within monotonically increasing election rounds called **Terms**:
 * Each Follower runs a background election timer randomized between **300ms and 600ms**.
 * If a Follower does not receive a heartbeat from a Leader before its timer expires, it increments `currentTerm`, transitions to **Candidate**, votes for itself, and broadcasts `RequestVote` RPCs over TCP to all peers.
@@ -28,7 +26,6 @@ $$\text{Quorum} = \left\lfloor \frac{N}{2} \right\rfloor + 1$$
 * **Why Split-Brain is Impossible:** Any two majorities of the same cluster must overlap by at least one node. Because each node can vote at most once per Term, two Candidates can never simultaneously achieve a Quorum in the same Term, and an isolated minority partition automatically refuses client writes.
 
 ### 3. Log Replication & Distributed State Machine (`AppendEntries` RPC)
-<!-- CUSTOMIZE: Explain in your own words how a write is not applied immediately, but only after a majority of nodes write it to their logs -->
 Client mutations (`SET`, `LOCK`, `UNLOCK`) are never applied directly to memory on receipt. Instead, they go through a two-phase consensus flow:
 
 ```text
